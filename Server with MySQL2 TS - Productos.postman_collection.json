@@ -1,0 +1,342 @@
+{
+  "info": {
+    "_postman_id": "1f564534-5f44-43e3-ab15-3e1c476c9626",
+    "name": "Server with MySQL2 TS - Productos",
+    "description": "Colección de evidencia para API REST de productos con Node.js, Express, TypeScript y MySQL2. Ejecutar en orden; tras POST /create, copiar el ID recibido a la variable productId de la colección si es diferente de 1. Los productos inactivos no aparecen en las consultas GET.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58824388",
+    "_collection_link": "https://go.postman.co/collection/58824388-1f564534-5f44-43e3-ab15-3e1c476c9626?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Crear producto (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  if (data.id) pm.collectionVariables.set('productId', String(data.id));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Laptop HP Victus\",\n  \"price\": 14500,\n  \"stock\": 10,\n  \"description\": \"Laptop con 16 GB de RAM\",\n  \"brand\": \"HP\",\n  \"img\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "create"
+          ]
+        },
+        "description": "Crea un producto activo. name, price (>0), stock (entero >=0), description obligatorios; brand e img opcionales. Respuesta esperada: 201 y el id creado."
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Consultar todos los activos (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getAll?active=TRUE",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getAll"
+          ],
+          "query": [
+            {
+              "key": "active",
+              "value": "TRUE"
+            }
+          ]
+        },
+        "description": "Lista únicamente productos activos. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Consultar producto por ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getById/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getById",
+            "{{productId}}"
+          ]
+        },
+        "description": "Devuelve un producto activo por ID positivo. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Actualizar producto completo (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Laptop HP Victus actualizada\",\n  \"price\": 15000,\n  \"stock\": 8,\n  \"description\": \"Laptop actualizada con 16 GB de RAM\",\n  \"brand\": \"HP\",\n  \"img\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/update/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "update",
+            "{{productId}}"
+          ]
+        },
+        "description": "Actualiza los datos completos de un producto activo. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Cambiar solamente precio (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": 13999.99\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/change-price/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "change-price",
+            "{{productId}}"
+          ]
+        },
+        "description": "Modifica exclusivamente el precio del producto activo. Precio numérico mayor a cero. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Baja lógica (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/delete/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "delete",
+            "{{productId}}"
+          ]
+        },
+        "description": "Marca active=0 sin eliminar la fila. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Verificar lista después de baja (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getAll?active=TRUE",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getAll"
+          ],
+          "query": [
+            {
+              "key": "active",
+              "value": "TRUE"
+            }
+          ]
+        },
+        "description": "Comprobar que el producto dado de baja no aparece. Respuesta esperada: 200."
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Verificar ID después de baja (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getById/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getById",
+            "{{productId}}"
+          ]
+        },
+        "description": "Comprobar que el producto inactivo no se consulta. Respuesta esperada según implementación actual: 404."
+      },
+      "response": []
+    },
+    {
+      "name": "09 - ID inexistente (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getById/999999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getById",
+            "999999999"
+          ]
+        },
+        "description": "Caso de producto inexistente. Respuesta esperada según implementación actual: 404."
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Precio inválido (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Producto inválido\",\n  \"price\": -50,\n  \"stock\": 5,\n  \"description\": \"Prueba de validación\",\n  \"brand\": null,\n  \"img\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "create"
+          ]
+        },
+        "description": "Caso de datos inválidos: price negativo. Respuesta esperada: 400."
+      },
+      "response": []
+    },
+    {
+      "name": "11 - ID inválido (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/getById/abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getById",
+            "abc"
+          ]
+        },
+        "description": "Caso de ID no entero positivo. Respuesta esperada: 400."
+      },
+      "response": []
+    },
+    {
+      "name": "12 - Precio inválido (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/change-price/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "change-price",
+            "{{productId}}"
+          ]
+        },
+        "description": "Caso de precio inválido al modificar precio. Respuesta esperada: 400."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1/products"
+    },
+    {
+      "key": "productId",
+      "value": "1"
+    }
+  ]
+}
